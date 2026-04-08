@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if user.is_authenticated %}
+
+<h1>Client List</h1><br>
+<p>
+<a href="{% url 'add_client' %}" class="btn btn-primary">Add New Client</a>
+<a href="{% url 'export_csv' %}" class="btn btn-primary">Export as CSV</a>
+<a href="{% url 'export_pdf' %}" class="btn btn-primary">Export as PDF</a>
+</p>
+
+<p>
+  <form action="{% url 'search_client' %}" method="get">
+    <input type="text" name="q" placeholder="Search by name or city">
+    <button type="submit">Search</button>
+  </form>
+</p>
+
+<table class="table table-primary table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Phone</th>
+      <th scope="col">City</th>
+      <th scope="col">Created at</th>
+      <th scope="col">ID</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody class="table table-striped">
+    <tr>
+      {% if clients %}
+        {% for client in clients %}
+
+          <td><a href="{% url 'client' client.id %}">{{ client.full_name }}</a></td> 
+          <td>{{ client.email }}</td>
+          <td>{{ client.phone }}</td>
+          <td>{{ client.city }}</td>
+          <td>{{ client.created_at }}</td>
+          <td>{{ client.id }}</td>
+          <td><a href="{% url 'product' client.id %}">Product</a></td>
+          
+    </tr>
+        {% endfor %}
+
+      {% endif %}
+    
+  </tbody>
+</table>
+
+  
+
+{% else %}
+
+<h1>Login</h1>
+<br/>
+
+<form method="post" action="{% url 'home' %}">
+    {% csrf_token %}
+
+    <form>
+        <div class="mb-3">
+          <input type="text" class="form-control" name="username" placeholder="Username" required>
+        </div>
+        <div class="mb-3">
+          <input type="password" class="form-control" name="password" placeholder="Password" required>
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+
+
+{% endif %}
+
+{% endblock %}
+
+
+
+<!--<td><a href="{% url 'orders' client.id %}">Orders</a></td> 
+          <td><a href="{% url 'rent' client.id %}">Rent</a></td>
+          <td><a href="{% url 'service' client.id %}">Service</a></td>-->
