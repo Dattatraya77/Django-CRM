@@ -1,7 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Rent add form</h1>
 
+{% if user.is_authenticated %}
+
+<h1>Add New Rent</h1>
+
+<form method="POST" >
+	{% csrf_token %}
+
+    {{ form.as_p }}
+
+    <br/>
+    <button type="submit" class="btn btn-secondary">Update</button>
+    <a href="{% url 'home' %}" class="btn btn-info">Cancel</a>
+</form>
+
+{% endif %}
 
 {% endblock %}

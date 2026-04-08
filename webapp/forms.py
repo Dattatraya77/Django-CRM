@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Client, Order, Service, Product
+from .models import Client, Order, Service, Product, Rent
 
 class RegistrationForm(UserCreationForm):
 	email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
@@ -75,6 +75,19 @@ class NewProductForm(forms.ModelForm):
 	class Meta:
 		model = Product
 		fields = ['product_name', 'price']
+
+	def __init__(self, *args, **kwargs):
+		self.client = kwargs.pop('client', None)
+		super().__init__(*args, **kwargs)
+
+
+# New order form
+class NewRentForm(forms.ModelForm):
+	rent_receive_amount = forms.DecimalField(label="", max_digits=10, decimal_places=2, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Enter Amount'}))
+
+	class Meta:
+		model = Rent
+		fields = ['rent_receive_amount']
 
 	def __init__(self, *args, **kwargs):
 		self.client = kwargs.pop('client', None)

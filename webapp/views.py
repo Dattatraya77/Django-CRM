@@ -6,7 +6,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from django.http import HttpResponse
 from django.contrib import messages
-from .forms import RegistrationForm, AddClientForm, NewOrderForm, NewServiceForm, NewProductForm
+from .forms import RegistrationForm, AddClientForm, NewOrderForm, NewServiceForm, NewProductForm, NewRentForm
 from .models import Client, Order, Service
 from django.db.models import Q
 
@@ -151,21 +151,46 @@ def rent(request, client_pk):
     if request.user.is_authenticated:
         client = get_object_or_404(Client, pk=client_pk)
         rents = client.rent_set.all()
+        print("rents:->",rents)
         return render(request, 'rent.html', {'client':client, 'rents':rents})
     else:
         messages.success(request, "You have to login to view rent info")
         return redirect('home')
     
 # For rent addition
+# def new_rent(request, client_pk):
+#     if request.user.is_authenticated:
+#         client = get_object_or_404(Client, pk=client_pk)
+#         rents = client.rent_set.all()
+#         return render(request, 'new_rent.html', {'client':client, 'rents':rents})
+#     else:
+#         messages.success(request, "You have to login to view rent info")
+#         return redirect('home')
+    
+
+# For rent addition
 def new_rent(request, client_pk):
     if request.user.is_authenticated:
-        client = get_object_or_404(Client, pk=client_pk)
+        client = get_object_or_404(Client, id=client_pk)
         rents = client.rent_set.all()
-        return render(request, 'new_rent.html', {'client':client, 'rents':rents})
+        if request.method == 'POST':
+            form = NewRentForm(request.POST, client=client)
+            if form.is_valid():
+                rent = form.save(commit=False)
+                rent.client = client
+                rent.save()
+                messages.success(request, "New Rent created...")
+                return render(request, 'rent.html', {'client': client, 'rents':rents})
+            else:
+                messages.success(request, "Rent not created...")
+                form = NewRentForm(client=client)
+        else:
+            form = NewRentForm(client=client)
+        return render(request, 'new_rent.html', {'form':form})
     else:
-        messages.success(request, "You have to login to view rent info")
+        messages.success(request, "You are not allow to create new rent")
         return redirect('home')
-    
+
 
 # For service list view
 def service(request, client_pk):
